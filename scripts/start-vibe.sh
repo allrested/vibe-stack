@@ -48,6 +48,11 @@ fi
 
 # 4. Git Configuration
 echo '--- Configuring Git ---'
+# Fix permissions for the data volume
+echo "Fixing permissions for /home/node/.vibe-kanban..."
+mkdir -p /home/node/.vibe-kanban
+chown -R node:node /home/node/.vibe-kanban
+
 # Define variables before switching user to use in the exec command or run as node here
 # We'll run git config commands as node user using su
 su - node -c "
