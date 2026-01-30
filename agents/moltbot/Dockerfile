@@ -16,6 +16,10 @@ RUN npm install -g openclaw@latest
 
 # Create non-root user directory structure
 WORKDIR /home/node
+RUN mkdir -p /home/node/.openclaw/credentials && \
+    mkdir -p /home/node/clawd && \
+    chown -R node:node /home/node/.openclaw /home/node/clawd && \
+    chmod 700 /home/node/.openclaw
 
 # Set permissions
 # Default ports

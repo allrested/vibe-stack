@@ -81,7 +81,7 @@ async function main() {
   }
 
   // 4. Generate Token if missing
-  if (!envContent.includes('CLAWDBOT_GATEWAY_TOKEN') || envContent.includes('CLAWDBOT_GATEWAY_TOKEN=')) { // Check empty or missing
+  if (!envContent.includes('OPENCLAW_GATEWAY_TOKEN') || envContent.includes('OPENCLAW_GATEWAY_TOKEN=')) { // Check empty or missing
     // Simple check, regex would be better but keeping it simple
   }
 
@@ -105,7 +105,23 @@ async function main() {
     console.log('\n✨ Stack is running!');
     if (enableVibe) console.log(`   - Vibe Server:   http://localhost:4000`);
     if (enableCode) console.log(`   - VS Code:       http://localhost:8443`);
-    if (enableMoltbot) console.log(`   - Moltbot:       http://localhost:18789`);
+    if (enableMoltbot) {
+      // Extract Token for display
+      const tokenMatch = envContent.match(/OPENCLAW_GATEWAY_TOKEN=(.+)/);
+      const token = tokenMatch ? tokenMatch[1].trim() : null;
+
+      if (token) {
+        console.log(`   - Moltbot:       http://localhost:18789`);
+        console.log(`     \x1b[33m🔑 Dashboard:    http://localhost:18790/?token=${token}\x1b[0m`);
+        console.log(`\n\x1b[36m📱 Moltbot Pairing Instructions:\x1b[0m`);
+        console.log(`   1. Message your bot on WhatsApp/Telegram/Signal/Slack.`);
+        console.log(`   2. When it replies with a pairing code, run this command:`);
+        console.log(`      \x1b[32mdocker exec -it moltbot-gateway openclaw pairing list --channel <channel>\x1b[0m`);
+        console.log(`      (Replace <channel> with whatsapp, telegram, etc.)`);
+      } else {
+        console.log(`   - Moltbot:       http://localhost:18789`);
+      }
+    }
     if (enableNetwork) {
       console.log(`   - Nginx Admin:   http://localhost:81`);
       console.log(`   - AdGuard:       http://localhost:8086`);

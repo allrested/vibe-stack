@@ -82,7 +82,8 @@ services:
       - "18789:18789"
       - "18790:18790"
     environment:
-      - CLAWDBOT_GATEWAY_TOKEN=${CLAWDBOT_GATEWAY_TOKEN}
+      - OPENCLAW_GATEWAY_TOKEN=${OPENCLAW_GATEWAY_TOKEN}
+      - OPENCLAW_MODEL=${OPENCLAW_MODEL}
     volumes:
       - ./agents/moltbot/config:/home/node/.openclaw   # Config storage (was .clawdbot)
       - ./agents/moltbot/workspace:/home/node/clawd     # Workspace storage
