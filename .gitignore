@@ -1,5 +1,6 @@
 # Environment
 .env
+data/
 
 # Secrets - only keep structure and examples
 secrets/*
@@ -14,6 +15,12 @@ secrets/your-project/*
 agents/claude/*
 !agents/claude/settings.json.example
 !agents/claude/.gitkeep
+
+# Moltbot config & workspace
+agents/moltbot/config/*
+!agents/moltbot/config/.gitkeep
+agents/moltbot/workspace/*
+!agents/moltbot/workspace/.gitkeep
 
 # System
 *.log

@@ -9,6 +9,9 @@ Production-ready Docker setup for **Vibe-Kanban** + **Claude Code** AI coding pl
 
 - 🤖 **Vibe-Kanban** - AI agent orchestration platform
 - 💻 **code-server** - Browser-based VS Code
+- 🌐 **Nginx Proxy Manager** - Easy reverse proxy management
+- 🛡️ **AdGuard Home** - Network-wide ad & tracker blocking
+- 🦞 **Moltbot** - Personal AI assistant (multi-channel: WhatsApp, Telegram, Discord, Slack, etc.)
 - 🔐 **Secure Secrets** - Project secrets isolated from AI agents
 - 📦 **Persistent Data** - Projects and settings survive restarts
 - 🐳 **One Command Deploy** - Get started in minutes
@@ -76,6 +79,10 @@ docker exec -it vibe-server su - node -c "claude --dangerously-skip-permissions"
 |---------|-----|----------|
 | Vibe-Kanban | http://localhost:4000 | - |
 | VS Code | http://localhost:8443 | From `.env` file |
+| Nginx Proxy Manager | http://localhost:81 | Default: `admin@example.com` / `changeme` |
+| AdGuard Home (Setup) | http://localhost:8086 | - |
+| AdGuard Home (Web) | http://localhost:8085 | Set during setup |
+| Moltbot Gateway | http://localhost:18789 | - |
 
 ## 📁 Project Structure
 
@@ -84,8 +91,12 @@ vibe-stack/
 ├── docker-compose.yml    # Main configuration
 ├── .env                  # Environment variables
 ├── agents/
-│   └── claude/           # Claude Code settings (accessible by agent)
-│       └── settings.json
+│   ├── claude/           # Claude Code settings
+│   │   └── settings.json
+│   └── moltbot/          # Moltbot settings (NEW)
+├── data/                 # Persistent data
+│   ├── npm/              # Nginx Proxy Manager data
+│   └── adguard/          # AdGuard Home data
 ├── secrets/              # Project secrets (NOT accessible by agent)
 │   └── your-project/
 │       └── .env.*
@@ -127,6 +138,9 @@ docker-compose ps
 |-----------|-----------|-----|
 | vibe-kanban | ~200 MB | ~300 MB |
 | code-server | ~500 MB | ~400 MB |
+| moltbot | ~300 MB | ~250 MB |
+| nginx-proxy | ~100 MB | ~100 MB |
+| adguard-home | ~100 MB | ~100 MB |
 
 ## 🔧 Configuration
 
@@ -143,6 +157,7 @@ Secrets are automatically copied to `/repos/your-project/.env.*.local`
 Set in `.env`:
 ```
 CODE_SERVER_PASSWORD=your-secure-password
+CLAWDBOT_GATEWAY_TOKEN=your-gateway-token
 ```
 
 ### Using GLM-4 / Alternative LLMs (via z.ai Proxy)
@@ -170,6 +185,32 @@ This setup supports using zhipu.ai GLM-4 models as an alternative to Claude. Edi
 | Haiku | glm-4.5-air |
 | Sonnet | glm-4.7 |
 | Opus | glm-4.7 |
+
+### Moltbot (Personal AI Assistant)
+
+Moltbot is a multi-channel AI assistant that connects to WhatsApp, Telegram, Discord, Slack, and more.
+
+**First-time Setup:**
+
+```bash
+# Generate gateway token (already in .env)
+openssl rand -hex 32
+
+# Start services
+docker-compose up -d
+
+# Run onboarding wizard
+docker exec -it moltbot-gateway openclaw onboard
+```
+
+**Ports:**
+- `18789`: Gateway API (HTTP/WebSocket)
+- `18790`: Control plane
+
+**Config:** `agents/moltbot/` - accessible from project root
+- `18790`: Control plane
+
+**Config:** `agents/moltbot/` - accessible from project root
 
 ## 📖 Documentation
 

@@ -1,6 +1,7 @@
 services:
   vibe-kanban:
-    image: node:20-slim
+    profiles: ["vibe"]
+    build: .
     container_name: vibe-server
     working_dir: /app
     ports:
@@ -17,55 +18,43 @@ services:
       - ./secrets:/root/secrets:ro
       - ./agents/claude:/home/node/.claude
       - ./dev-server.sh:/usr/local/bin/dev-server.sh:ro
-    command: >
-      sh -c "
-        # 1. Temel araçları yükle
-        apt-get update && apt-get install -y git ssh nano curl sudo &&
-        
-        # 2. İzinleri ayarla
-        chown -R node:node /repos /app /home/node &&
-
-        # 3. Claude Code'u global olarak yükle
-        echo '' &&
-        echo '========================================' &&
-        echo 'Claude Code yükleniyor...' &&
-        echo '========================================' &&
-        npm install -g @anthropic-ai/claude-code &&
-        echo '' &&
-        echo 'Claude Code versiyon kontrolü:' &&
-        claude --version &&
-        echo '' &&
-        echo 'Claude Code başarıyla yüklendi!' &&
-        echo '========================================' &&
-        echo '' &&
-
-        # 4. Claude config iznlerini ayarla
-        chown -R node:node /home/node/.claude &&
-
-        # 5. Proje Yapılandırması (KOPYALAMA - symlink değil)
-        echo '--- Projeler kontrol ediliyor ---' &&
-        for d in /repos/* ; do
-          if [ -d \"\$$d\" ]; then
-            proje_adi=\$$(basename \"\$$d\")
-            if [ -d \"/root/secrets/\$$proje_adi\" ]; then
-              cp -f /root/secrets/\$$proje_adi/.env.development \"\$$d/.env.development.local\" 2>/dev/null || true
-              cp -f /root/secrets/\$$proje_adi/.env.production \"\$$d/.env.production.local\" 2>/dev/null || true
-              chown node:node \"\$$d/.env.development.local\" \"\$$d/.env.production.local\" 2>/dev/null || true
-            fi
-          fi
-        done &&
-
-        echo '--- Secrets /root/secrets altinda, agent erisemez ---' &&
-
-        echo '--- Sistem Hazır! Vibe başlatılıyor... ---' &&
-        # 6. Vibe'ı node kullanıcısı ile başlat (su komutu ile)
-        su - node -c 'HOME=/home/node npm_config_cache=/home/node/.npm PORT=4000 HOST=0.0.0.0 CLAUDE_SKIP_PERMISSION_CHECK=true DANGEROUS_SKIP_PERMISSION=true npx vibe-kanban'"
     restart: unless-stopped
+
+  # ====================================
+  # NETWORK STACK (Nginx + DNS)
+  # ====================================
+  npm:
+    profiles: ["nginx"]
+    image: 'jc21/nginx-proxy-manager:latest'
+    container_name: nginx-proxy
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '81:81'
+      - '443:443'
+    volumes:
+      - ./data/npm/data:/data
+      - ./data/npm/letsencrypt:/etc/letsencrypt
+
+  adguard:
+    profiles: ["dns"]
+    image: adguard/adguardhome
+    container_name: adguard-home
+    restart: unless-stopped
+    ports:
+      - '53:53/tcp'
+      - '53:53/udp'
+      - '8085:80/tcp' # Web UI port (was 3001, changed due to conflict)
+      - '8086:3000/tcp' # Setup port (was 3000, changed due to conflict)
+    volumes:
+      - ./data/adguard/work:/opt/adguardhome/work
+      - ./data/adguard/conf:/opt/adguardhome/conf
 
   # ====================================
   # CODE-SERVER (Browser-based VS Code)
   # ====================================
   code-server:
+    profiles: ["code"]
     image: codercom/code-server:latest
     container_name: code-server
     ports:
@@ -78,6 +67,26 @@ services:
       - code_server_data:/home/coder # User data persist
       - ~/.ssh:/home/coder/.ssh:ro # Git SSH access
     restart: unless-stopped
+
+  # ====================================
+  # MOLTBOT (Personal AI Assistant)
+  # ====================================
+  moltbot:
+    profiles: ["moltbot"]
+    build:
+      context: ./agents/moltbot
+    container_name: moltbot-gateway
+    # platform: linux/amd64  # Node 22 supports ARM64 natively
+    restart: unless-stopped
+    ports:
+      - "18789:18789"
+      - "18790:18790"
+    environment:
+      - CLAWDBOT_GATEWAY_TOKEN=${CLAWDBOT_GATEWAY_TOKEN}
+    volumes:
+      - ./agents/moltbot/config:/home/node/.openclaw   # Config storage (was .clawdbot)
+      - ./agents/moltbot/workspace:/home/node/clawd     # Workspace storage
+      - ./repos:/repos                                 # Shared repos access
 
 volumes:
   vibe_config:

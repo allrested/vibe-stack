@@ -1,0 +1,11 @@
+# Ignore all contents in config and workspace directories
+config/*
+workspace/*
+
+# Keep the directories themselves (optional, using .gitkeep convention)
+!config/.gitkeep
+!workspace/.gitkeep
+
+# Ignore other potential runtime files
+*.log
+update-check.json

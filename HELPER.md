@@ -12,6 +12,15 @@ docker-compose up -d vibe-kanban
 # Start only code-server
 docker-compose up -d code-server
 
+# Start only moltbot
+docker-compose up -d moltbot
+
+# Start only nginx-proxy
+docker-compose up -d npm
+
+# Start only adguard
+docker-compose up -d adguard
+
 # Start with logs visible (for debugging)
 docker-compose up
 ```
@@ -57,6 +66,33 @@ docker exec -it vibe-server su - node -c "claude --dangerously-skip-permissions"
 ```
 
 > 💡 **Note:** Login is not required for normal restarts (`docker-compose restart`). Only needed after `docker-compose down -v` or when container is newly created.
+
+## 🦞 Moltbot Initial Setup
+
+> Moltbot is a personal AI assistant that connects to WhatsApp, Telegram, Discord, Slack, and more.
+
+### Step 1: Ensure Gateway Token is Set
+Check `.env` file has `CLAWDBOT_GATEWAY_TOKEN` set.
+
+### Step 2: Run Onboarding
+```bash
+docker exec -it moltbot-gateway openclaw onboard
+```
+
+### Step 3: Configure Channels
+Follow the interactive wizard to connect your messaging channels.
+
+### Quick Commands
+```bash
+# View moltbot logs
+docker logs -f moltbot-gateway
+
+# Check channel status
+docker exec -it moltbot-gateway openclaw channels status
+
+# Restart moltbot
+docker-compose restart moltbot
+```
 
 ## 🛑 Stopping
 
@@ -111,6 +147,12 @@ docker-compose logs -f vibe-kanban
 # Only code-server logs
 docker-compose logs -f code-server
 
+# Only nginx-proxy logs
+docker-compose logs -f npm
+
+# Only adguard logs
+docker-compose logs -f adguard
+
 # Last 50 lines of logs
 docker-compose logs --tail 50
 
@@ -128,6 +170,15 @@ docker exec -it vibe-server bash
 # Enter code-server container
 docker exec -it code-server bash
 
+# Enter nginx-proxy container
+docker exec -it nginx-proxy sh
+
+# Enter adguard container
+docker exec -it adguard-home sh
+
+# Enter moltbot container
+docker exec -it moltbot-gateway sh
+
 # Enter as root
 docker exec -it -u root vibe-server bash
 ```
@@ -144,7 +195,7 @@ docker image prune
 # Remove unused volumes (CAUTION: All data will be lost!)
 docker volume prune
 
-# Remove everything (CAUTION: All data will be lost!)
+# Remove everything (CAUTION: All data will be lost! Include other yours container)
 docker system prune -a --volumes
 ```
 
@@ -180,6 +231,10 @@ docker-compose pull && docker-compose up -d
 |---------|-----|----------|
 | Vibe-Kanban | http://localhost:4000 | - |
 | VS Code (code-server) | http://localhost:8443 | from `.env` file |
+| Moltbot Gateway | http://localhost:18789 | - |
+| Moltbot Control | http://localhost:18790 | - |
+| Nginx Proxy Manager | http://localhost:81 | Default: `admin@example.com` / `changeme` |
+| AdGuard Home (Setup) | http://localhost:8086 | - |
 
 ## 🆘 Troubleshooting
 
@@ -190,6 +245,7 @@ docker logs code-server --tail 50
 # Is port in use?
 lsof -i :4000
 lsof -i :8443
+lsof -i :18789
 
 # Force stop container
 docker kill vibe-server
@@ -230,4 +286,4 @@ docker-compose up -d
 
 ---
 
-*Last Updated: 2026-01-10*
+*Last Updated: 2026-01-30*
