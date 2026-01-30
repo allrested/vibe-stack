@@ -286,4 +286,40 @@ docker-compose up -d
 
 ---
 
+## 🛠️ Advanced: Accessing Containers (SSH/Shell)
+
+If you need to enter a running container to check files or run commands manually (like `ssh`), use the following commands:
+
+**Generic Command:**
+```bash
+docker exec -it <container_name> sh
+# or if sh is not available:
+docker exec -it <container_name> bash
+```
+
+**Specific Shortcuts:**
+
+1.  **Vibe Server (Kanban):**
+    ```bash
+    docker exec -it vibe-server sh
+    ```
+
+2.  **Moltbot (AI Agent):**
+    ```bash
+    docker exec -it moltbot-gateway bash
+    ```
+
+3.  **Code Server (VS Code):**
+    ```bash
+    docker exec -it code-server bash
+    ```
+
+4.  **Nginx Proxy Manager:**
+    ```bash
+    docker exec -it nginx-proxy sh
+    ```
+
+> **Tip:** To run a command as `root` (e.g. to install packages), add `-u root`:
+> `docker exec -it -u root vibe-server sh`
+
 *Last Updated: 2026-01-30*

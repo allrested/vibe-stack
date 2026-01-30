@@ -18,12 +18,12 @@ RUN npm install -g openclaw@latest
 WORKDIR /home/node
 
 # Set permissions
-RUN chown -R node:node /home/node
-
-USER node
-
 # Default ports
 EXPOSE 18789 18790
 
-# Entrypoint
-CMD ["openclaw", "gateway", "--bind", "lan", "--allow-unconfigured"]
+# Copy startup script
+COPY start-moltbot.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/start-moltbot.sh
+
+# Entrypoint - Run as root first to fix permissions
+ENTRYPOINT ["/usr/local/bin/start-moltbot.sh"]
