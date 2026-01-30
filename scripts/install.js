@@ -82,14 +82,14 @@ async function main() {
 
   // 4. Generate Token if missing
   if (!envContent.includes('CLAWDBOT_GATEWAY_TOKEN') || envContent.includes('CLAWDBOT_GATEWAY_TOKEN=')) { // Check empty or missing
-      // Simple check, regex would be better but keeping it simple
+    // Simple check, regex would be better but keeping it simple
   }
-  
+
   // Basic token generation logic if placeholder exists
   if (envContent.includes('your-gateway-token')) {
-      const token = crypto.randomBytes(32).toString('hex');
-      envContent = envContent.replace('your-gateway-token', token);
-      console.log(`🔑 Generated new Gateway Token.`);
+    const token = crypto.randomBytes(32).toString('hex');
+    envContent = envContent.replace('your-gateway-token', token);
+    console.log(`🔑 Generated new Gateway Token.`);
   }
 
   fs.writeFileSync(ENV_FILE, envContent);
@@ -97,21 +97,21 @@ async function main() {
 
   // 5. Run Docker Compose
   const startNow = (await ask('\nStart services now?', 'y')).toLowerCase() === 'y';
-  
+
   if (startNow) {
     console.log('\n🚀 Starting Docker Containers...');
-    run('docker-compose up -d --remove-orphans');
-    
+    run('docker compose up -d --remove-orphans');
+
     console.log('\n✨ Stack is running!');
     if (enableVibe) console.log(`   - Vibe Server:   http://localhost:4000`);
     if (enableCode) console.log(`   - VS Code:       http://localhost:8443`);
     if (enableMoltbot) console.log(`   - Moltbot:       http://localhost:18789`);
     if (enableNetwork) {
-        console.log(`   - Nginx Admin:   http://localhost:81`);
-        console.log(`   - AdGuard:       http://localhost:8086`);
+      console.log(`   - Nginx Admin:   http://localhost:81`);
+      console.log(`   - AdGuard:       http://localhost:8086`);
     }
   } else {
-    console.log('\nSkipping start. Run "docker-compose up -d" manually.');
+    console.log('\nSkipping start. Run "docker compose up -d" manually.');
   }
 
   rl.close();
