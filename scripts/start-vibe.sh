@@ -69,6 +69,10 @@ su - node -c "
 
 echo '--- Starting Vibe Kanban ---'
 
+# Fix vibe-kanban cache permissions (the issue we encountered)
+echo "Fixing vibe-kanbin cache permissions..."
+chown -R node:node /home/node/.vibe-kanban /home/node/.local
+
 # 3. Switch to node user and run app
 # Using exec to replace shell process
 exec su - node -c 'HOME=/home/node npm_config_cache=/home/node/.npm PORT=4000 HOST=0.0.0.0 CLAUDE_SKIP_PERMISSION_CHECK=true DANGEROUS_SKIP_PERMISSION=true npx vibe-kanban'

@@ -123,24 +123,50 @@ async function main() {
     console.log("\n🚀 Starting Docker Containers...");
     run("docker compose up -d --remove-orphans");
 
-    console.log("\n✨ Stack is running!");
-    if (enableVibe) console.log(`   - Vibe Server:   http://localhost:4000`);
-    if (enableCode) console.log(`   - VS Code:       http://localhost:8443`);
-    if (enableOpenClaw) {
-      console.log(`   - OpenClaw:       Container ready (setup required)`);
-      console.log(`\n\x1b[36m📱 OpenClaw Setup Instructions:\x1b[0m`);
-      console.log(`   \x1b[33mTo complete OpenClaw setup wizard, run:\x1b[0m`);
-      console.log(
-        `   \x1b[32mdocker exec -it openclaw-gateway su - node\x1b[0m`,
-      );
-      console.log(`   `);
-      console.log(`   The wizard will start automatically on first login.`);
-      console.log(`   After setup, start gateway: openclaw gateway --bind lan`);
+    console.log("\n✨ Stack is running!\n");
+
+    // Service URLs Table
+    console.log("\x1b[36m📋 Service URLs & Access:\x1b[0m");
+    console.log("┌─────────────────────┬─────────────────────────────────┐");
+    console.log("│ Service             │ URL/Access                     │");
+    console.log("├─────────────────────┼─────────────────────────────────┤");
+
+    if (enableVibe) {
+      console.log("│ Vibe-Kanban         │ http://localhost:4000         │");
+    }
+    if (enableCode) {
+      console.log("│ VS Code             │ http://localhost:8443           │");
+      console.log("│                     │ Password: " + (envContent.match(/CODE_SERVER_PASSWORD=([^\n]+)/)?.[1] || 'your-secure-password') + " │");
     }
     if (enableNetwork) {
-      console.log(`   - Nginx Admin:   http://localhost:81`);
-      console.log(`   - AdGuard:       http://localhost:8086`);
+      console.log("│ Nginx Proxy Manager │ http://localhost:81           │");
+      console.log("│                     │ User: admin@example.com        │");
+      console.log("│                     │ Pass: changeme                 │");
+      console.log("│ AdGuard Home        │ http://localhost:8086         │");
+      console.log("│                     │ Setup required                 │");
     }
+    console.log("└─────────────────────┴─────────────────────────────────┘\n");
+
+    // OpenClaw Setup Instructions
+    if (enableOpenClaw) {
+      console.log("\x1b[36m🦞 OpenClaw Setup Instructions:\x1b[0m");
+      console.log("┌─────────────────────────────────────────────────────────────────┐");
+      console.log("│ 1. Complete the setup wizard:                                  │");
+      console.log("│   \x1b[33mdocker exec -it openclaw-gateway su - node\x1b[0m              │");
+      console.log("│                                                                 │");
+      console.log("│ 2. Gateway will start automatically on first login.             │");
+      console.log("│ 3. After setup, start gateway with:                            │");
+      console.log("│   \x1b[32mopenclaw gateway --bind lan\x1b[0m                              │");
+      console.log("│                                                                 │");
+      console.log("│ Gateway URL: http://localhost:18789                            │");
+      console.log("│ Dashboard URL: http://localhost:18790                          │");
+      console.log("└─────────────────────────────────────────────────────────────────┘\n");
+    }
+
+    console.log("💡 Tips:");
+    console.log("   • Use \x1b[32mdocker-compose logs -f\x1b[0m to monitor logs");
+    console.log("   • Use \x1b[32mdocker-compose ps\x1b[0m to check service status\n");
+    console.log("✅ Setup complete! You can now access your services.\n");
   } else {
     console.log('\nSkipping start. Run "docker compose up -d" manually.');
   }
