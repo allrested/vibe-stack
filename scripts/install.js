@@ -126,6 +126,45 @@ async function main() {
       console.log(`   - Nginx Admin:   http://localhost:81`);
       console.log(`   - AdGuard:       http://localhost:8086`);
     }
+
+    // Interactive Configuration for Moltbot
+    if (enableMoltbot) {
+      console.log('\n\x1b[36m🤖 Moltbot Configuration\x1b[0m');
+      const configureNow = (await ask('Do you want to configure Moltbot agent (Model, API Keys) interacting with the container now?', 'y')).toLowerCase() === 'y';
+
+      if (configureNow) {
+        console.log('\n\x1b[33mEntering Moltbot container...\x1b[0m');
+        console.log('You will be dropped into the OpenClaw configuration wizard.');
+        console.log('Follow the on-screen instructions to set your Model (e.g. GLM) and API Keys.');
+        console.log('When finished, type \x1b[1mexit\x1b[0m to return here.\n');
+
+        // Use spawn with stdio inherit to attach to current TTY
+        try {
+          // We use 'docker exec -it' but we need to run it via child_process.spawn to keep interactivity
+          // execSync captures output but doesn't handle interactive TTY well for complex wizards like this
+          const { spawn } = require('child_process');
+
+          // Using a promise wrapper for spawn
+          await new Promise((resolve, reject) => {
+            const child = spawn('docker', ['exec', '-it', 'moltbot-gateway', 'openclaw', 'onboard'], { stdio: 'inherit' });
+            child.on('close', (code) => {
+              console.log(`\nConfiguration wizard exited with code ${code}`);
+              resolve();
+            });
+            child.on('error', (err) => {
+              console.error('Failed to start configuration wizard:', err);
+              resolve(); // Don't crash main script
+            });
+          });
+        } catch (e) {
+          console.error('Error launching interactive config:', e);
+        }
+      } else {
+        console.log('\nYou can configure it later manually with:');
+        console.log('\x1b[32mdocker exec -it moltbot-gateway openclaw onboard\x1b[0m');
+      }
+    }
+
   } else {
     console.log('\nSkipping start. Run "docker compose up -d" manually.');
   }

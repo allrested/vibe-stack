@@ -17,12 +17,4 @@ if [ -n "$OPENCLAW_GATEWAY_TOKEN" ]; then
   TOKEN_ARG="--token $OPENCLAW_GATEWAY_TOKEN"
 fi
 
-MODEL_ARG=""
-if [ -n "$OPENCLAW_MODEL" ]; then
-  # Note: The CLI flag might differ, usually it's config based, but passing env is safer
-  # If CLI supports --model, we add it. 
-  # Based on common patterns, we rely on env var injection to the process.
-  echo "Using Model: $OPENCLAW_MODEL"
-fi
-
 exec su - node -c "openclaw gateway --bind lan --allow-unconfigured $TOKEN_ARG"
