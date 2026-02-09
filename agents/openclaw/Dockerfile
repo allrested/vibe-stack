@@ -17,8 +17,8 @@ RUN echo "node ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/node
 # Create non-root user directory structure
 WORKDIR /home/node
 RUN mkdir -p /home/node/.openclaw/credentials && \
-    mkdir -p /home/node/clawd && \
-    chown -R node:node /home/node/.openclaw /home/node/clawd && \
+    mkdir -p /home/node/openclaw && \
+    chown -R node:node /home/node/.openclaw /home/node/openclaw && \
     chmod 700 /home/node/.openclaw
 
 # Set permissions
@@ -26,12 +26,12 @@ RUN mkdir -p /home/node/.openclaw/credentials && \
 EXPOSE 18789 18790
 
 # Copy startup script
-COPY start-moltbot.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/start-moltbot.sh
+COPY start-openclaw.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/start-openclaw.sh
 
 # Copy onboarding script to profile.d (runs on interactive login)
 COPY openclaw-onboarding.sh /etc/profile.d/
 RUN chmod +x /etc/profile.d/openclaw-onboarding.sh
 
 # Entrypoint - Run as root first to fix permissions
-ENTRYPOINT ["/usr/local/bin/start-moltbot.sh"]
+ENTRYPOINT ["/usr/local/bin/start-openclaw.sh"]

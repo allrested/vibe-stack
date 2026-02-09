@@ -11,7 +11,7 @@ Production-ready Docker setup for **Vibe-Kanban** + **Claude Code** AI coding pl
 - 💻 **code-server** - Browser-based VS Code
 - 🌐 **Nginx Proxy Manager** - Easy reverse proxy management
 - 🛡️ **AdGuard Home** - Network-wide ad & tracker blocking
-- 🦞 **Moltbot** - Personal AI assistant (multi-channel: WhatsApp, Telegram, Discord, Slack, etc.)
+- 🦞 **OpenClaw** - Personal AI assistant (multi-channel: WhatsApp, Telegram, Discord, Slack, etc.)
 - 🔐 **Secure Secrets** - Project secrets isolated from AI agents
 - 📦 **Persistent Data** - Projects and settings survive restarts
 - 🐳 **One Command Deploy** - Get started in minutes
@@ -75,14 +75,14 @@ docker exec -it vibe-server su - node -c "claude --dangerously-skip-permissions"
 
 ### 6. Access Services
 
-| Service | URL | Password |
-|---------|-----|----------|
-| Vibe-Kanban | http://localhost:4000 | - |
-| VS Code | http://localhost:8443 | From `.env` file |
-| Nginx Proxy Manager | http://localhost:81 | Default: `admin@example.com` / `changeme` |
-| AdGuard Home (Setup) | http://localhost:8086 | - |
-| AdGuard Home (Web) | http://localhost:8085 | Set during setup |
-| Moltbot Gateway | http://localhost:18789 | - |
+| Service              | URL                    | Password                                  |
+| -------------------- | ---------------------- | ----------------------------------------- |
+| Vibe-Kanban          | http://localhost:4000  | -                                         |
+| VS Code              | http://localhost:8443  | From `.env` file                          |
+| Nginx Proxy Manager  | http://localhost:81    | Default: `admin@example.com` / `changeme` |
+| AdGuard Home (Setup) | http://localhost:8086  | -                                         |
+| AdGuard Home (Web)   | http://localhost:8085  | Set during setup                          |
+| OpenClaw Gateway     | http://localhost:18789 | -                                         |
 
 ## 📁 Project Structure
 
@@ -93,7 +93,7 @@ vibe-stack/
 ├── agents/
 │   ├── claude/           # Claude Code settings
 │   │   └── settings.json
-│   └── moltbot/          # Moltbot settings (NEW)
+│   └── openclaw/          # OpenClaw settings (NEW)
 ├── data/                 # Persistent data
 │   ├── npm/              # Nginx Proxy Manager data
 │   └── adguard/          # AdGuard Home data
@@ -134,13 +134,13 @@ docker-compose ps
 
 ## 📊 Resource Usage
 
-| Container | Image Size | RAM |
-|-----------|-----------|-----|
-| vibe-kanban | ~200 MB | ~300 MB |
-| code-server | ~500 MB | ~400 MB |
-| moltbot | ~300 MB | ~250 MB |
-| nginx-proxy | ~100 MB | ~100 MB |
-| adguard-home | ~100 MB | ~100 MB |
+| Container    | Image Size | RAM     |
+| ------------ | ---------- | ------- |
+| vibe-kanban  | ~200 MB    | ~300 MB |
+| code-server  | ~500 MB    | ~400 MB |
+| openclaw     | ~300 MB    | ~250 MB |
+| nginx-proxy  | ~100 MB    | ~100 MB |
+| adguard-home | ~100 MB    | ~100 MB |
 
 ## 🔧 Configuration
 
@@ -155,9 +155,10 @@ Secrets are automatically copied to `/repos/your-project/.env.*.local`
 ### code-server Password
 
 Set in `.env`:
+
 ```
 CODE_SERVER_PASSWORD=your-secure-password
-CLAWDBOT_GATEWAY_TOKEN=your-gateway-token
+OPENCLAW_GATEWAY_TOKEN=your-gateway-token
 ```
 
 ### Using GLM-4 / Alternative LLMs (via z.ai Proxy)
@@ -180,15 +181,15 @@ This setup supports using zhipu.ai GLM-4 models as an alternative to Claude. Edi
 }
 ```
 
-| Model | Maps To |
-|-------|---------|
-| Haiku | glm-4.5-air |
-| Sonnet | glm-4.7 |
-| Opus | glm-4.7 |
+| Model  | Maps To     |
+| ------ | ----------- |
+| Haiku  | glm-4.5-air |
+| Sonnet | glm-4.7     |
+| Opus   | glm-4.7     |
 
-### Moltbot (Personal AI Assistant)
+### OpenClaw (Personal AI Assistant)
 
-Moltbot is a multi-channel AI assistant that connects to WhatsApp, Telegram, Discord, Slack, and more.
+OpenClaw is a multi-channel AI assistant that connects to WhatsApp, Telegram, Discord, Slack, and more.
 
 **First-time Setup:**
 
@@ -200,17 +201,19 @@ openssl rand -hex 32
 docker-compose up -d
 
 # Run onboarding wizard
-docker exec -it moltbot-gateway openclaw onboard
+docker exec -it openclaw-gateway openclaw onboard
 ```
 
 **Ports:**
+
 - `18789`: Gateway API (HTTP/WebSocket)
 - `18790`: Control plane
 
-**Config:** `agents/moltbot/` - accessible from project root
+**Config:** `agents/openclaw/` - accessible from project root
+
 - `18790`: Control plane
 
-**Config:** `agents/moltbot/` - accessible from project root
+**Config:** `agents/openclaw/` - accessible from project root
 
 ## 📖 Documentation
 

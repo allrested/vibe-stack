@@ -4,18 +4,18 @@ This file provides guidance to Claude Code when working with this repository.
 
 ## Project Overview
 
-**Vibe Stack** is a production-ready Docker containerized platform that orchestrates multiple AI-powered services and development tools. It bundles AI agents (Claude Code, Moltbot/OpenClaw) with development infrastructure (VS Code Server, Nginx Proxy Manager, AdGuard Home) into a cohesive Docker environment.
+**Vibe Stack** is a production-ready Docker containerized platform that orchestrates multiple AI-powered services and development tools. It bundles AI agents (Claude Code, OpenClaw/OpenClaw) with development infrastructure (VS Code Server, Nginx Proxy Manager, AdGuard Home) into a cohesive Docker environment.
 
 ## Tech Stack
 
-- **Runtime:** Node.js 20 (Vibe-Kanban), Node.js 22 (Moltbot)
+- **Runtime:** Node.js 20 (Vibe-Kanban), Node.js 22 (OpenClaw)
 - **Orchestration:** Docker & Docker Compose
 - **Package Manager:** NPM (global installs via npx)
 - **Scripts:** Bash shell scripts, Node.js for installation wizard
 - **Key Dependencies:**
   - `@anthropic-ai/claude-code` - Claude Code CLI
   - `vibe-kanban` - AI agent orchestration platform
-  - `openclaw` - Multi-channel AI assistant framework (Moltbot)
+  - `openclaw` - Multi-channel AI assistant framework (OpenClaw)
 
 ## Directory Structure
 
@@ -30,7 +30,7 @@ vibe-stack/
 │   └── dev-server.sh       # Lightweight dev server runner
 ├── agents/
 │   ├── claude/             # Claude Code configuration
-│   └── moltbot/            # Moltbot service (Dockerfile, startup script)
+│   └── openclaw/            # OpenClaw service (Dockerfile, startup script)
 ├── repos/                  # Shared project workspace (gitignored)
 ├── secrets/                # Project secrets, isolated from agents
 └── data/                   # Persistent data volumes (gitignored)
@@ -63,28 +63,31 @@ docker-compose ps
 
 ## Service Ports
 
-| Service | Port | Purpose |
-|---------|------|---------|
-| Vibe-Kanban | 4000 | Main AI platform |
-| VS Code | 8443 | Browser-based IDE |
-| Moltbot Gateway | 18789 | API endpoint |
-| Moltbot Dashboard | 18790 | Control plane |
-| Nginx Admin | 81 | Proxy management |
-| AdGuard | 8086 | DNS setup |
+| Service            | Port  | Purpose           |
+| ------------------ | ----- | ----------------- |
+| Vibe-Kanban        | 4000  | Main AI platform  |
+| VS Code            | 8443  | Browser-based IDE |
+| OpenClaw Gateway   | 18789 | API endpoint      |
+| OpenClaw Dashboard | 18790 | Control plane     |
+| Nginx Admin        | 81    | Proxy management  |
+| AdGuard            | 8086  | DNS setup         |
 
 ## Docker Compose Profiles
 
 Services use profiles for selective enablement:
+
 - `vibe` - Vibe-Kanban
 - `code` - VS Code Server
-- `moltbot` - Moltbot AI Assistant
+- `openclaw` - OpenClaw AI Assistant
 - `nginx` - Nginx Proxy Manager
 - `dns` - AdGuard Home
 
 ## Coding Conventions
 
 ### Startup Script Pattern
+
 All services follow a consistent initialization pattern:
+
 1. Fix permissions (ensure correct user ownership)
 2. Configure environment (copy SSH keys, setup git)
 3. Copy project secrets to correct locations
@@ -92,12 +95,14 @@ All services follow a consistent initialization pattern:
 5. Start main process
 
 ### Security Model
+
 - Services run as `node` user (non-root) for security
 - Secrets in `/secrets` are mounted read-only and isolated from agents
 - SSH keys copied from host during container startup
 - Configuration files properly chown'd to `node:node`
 
 ### Environment Configuration
+
 - `.env.example` serves as template - copy to `.env` for local config
 - Agent configs stored in `/agents/<agent-name>/`
 - Project secrets separated into `/secrets/your-project/.env.*`
@@ -106,7 +111,7 @@ All services follow a consistent initialization pattern:
 
 - `docker-compose.yml` - Service definitions and orchestration
 - `Dockerfile` - Vibe-Kanban container build
-- `agents/moltbot/Dockerfile` - Moltbot container build
+- `agents/openclaw/Dockerfile` - OpenClaw container build
 - `scripts/start-vibe.sh` - Main startup script, sets up permissions and environment
 - `scripts/install.js` - Interactive wizard for setup and configuration
 - `.env.example` - Environment variable template

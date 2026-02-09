@@ -25,13 +25,13 @@ services:
   # ====================================
   npm:
     profiles: ["nginx"]
-    image: 'jc21/nginx-proxy-manager:latest'
+    image: "jc21/nginx-proxy-manager:latest"
     container_name: nginx-proxy
     restart: unless-stopped
     ports:
-      - '80:80'
-      - '81:81'
-      - '443:443'
+      - "80:80"
+      - "81:81"
+      - "443:443"
     volumes:
       - ./data/npm/data:/data
       - ./data/npm/letsencrypt:/etc/letsencrypt
@@ -42,10 +42,10 @@ services:
     container_name: adguard-home
     restart: unless-stopped
     ports:
-      - '5353:53/tcp'   # DNS port (changed from 53 to avoid macOS conflict)
-      - '5353:53/udp'
-      - '8085:80/tcp'   # Web UI port
-      - '8086:3000/tcp' # Setup port
+      - "5354:53/tcp" # DNS port (changed from 53 to avoid macOS conflict)
+      - "5354:53/udp"
+      - "8085:80/tcp" # Web UI port
+      - "8086:3000/tcp" # Setup port
     volumes:
       - ./data/adguard/work:/opt/adguardhome/work
       - ./data/adguard/conf:/opt/adguardhome/conf
@@ -69,13 +69,13 @@ services:
     restart: unless-stopped
 
   # ====================================
-  # MOLTBOT (Personal AI Assistant)
+  # OPENCLAW (Personal AI Assistant)
   # ====================================
-  moltbot:
-    profiles: ["moltbot"]
+  openclaw:
+    profiles: ["openclaw"]
     build:
-      context: ./agents/moltbot
-    container_name: moltbot-gateway
+      context: ./agents/openclaw
+    container_name: openclaw-gateway
     # platform: linux/amd64  # Node 22 supports ARM64 natively
     restart: unless-stopped
     ports:
@@ -85,9 +85,9 @@ services:
       - OPENCLAW_GATEWAY_TOKEN=${OPENCLAW_GATEWAY_TOKEN}
       - OPENCLAW_MODEL=${OPENCLAW_MODEL}
     volumes:
-      - ./agents/moltbot/config:/home/node/.openclaw   # Config storage (was .clawdbot)
-      - ./agents/moltbot/workspace:/home/node/clawd     # Workspace storage
-      - ./repos:/repos                                 # Shared repos access
+      - ./agents/openclaw/config:/home/node/.openclaw # Config storage (was .openclaw)
+      - ./agents/openclaw/workspace:/home/node/openclaw # Workspace storage
+      - ./repos:/repos # Shared repos access
 
 volumes:
   vibe_config:

@@ -16,11 +16,11 @@ agents/claude/*
 !agents/claude/settings.json.example
 !agents/claude/.gitkeep
 
-# Moltbot config & workspace
-agents/moltbot/config/*
-!agents/moltbot/config/.gitkeep
-agents/moltbot/workspace/*
-!agents/moltbot/workspace/.gitkeep
+# OpenClaw config & workspace
+agents/openclaw/config/*
+!agents/openclaw/config/.gitkeep
+agents/openclaw/workspace/*
+!agents/openclaw/workspace/.gitkeep
 
 # System
 *.log

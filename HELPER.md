@@ -12,8 +12,8 @@ docker-compose up -d vibe-kanban
 # Start only code-server
 docker-compose up -d code-server
 
-# Start only moltbot
-docker-compose up -d moltbot
+# Start only OpenClaw
+docker-compose up -d openclaw
 
 # Start only nginx-proxy
 docker-compose up -d npm
@@ -30,24 +30,29 @@ docker-compose up
 > ⚠️ **Important:** Claude login is required when container is completely reset (`docker-compose down -v`) or created for the first time.
 
 ### Step 1: Enter Container
+
 ```bash
 docker exec -it vibe-server bash
 ```
 
 ### Step 2: Switch to Node User
+
 ```bash
 su - node
 ```
 
 ### Step 3: Start Claude
+
 ```bash
 claude --dangerously-skip-permissions
 ```
 
 ### Step 4: Select Theme
+
 - Use arrow keys to select or type `1` and press Enter (Dark mode)
 
 ### Step 5: Login
+
 1. Copy the **login link** shown in terminal
 2. Open in browser and **login with your Claude/Anthropic account**
 3. Click **"Authorize"** button
@@ -55,43 +60,49 @@ claude --dangerously-skip-permissions
 5. Return to Docker terminal, **paste** and press Enter
 
 ### Step 6: Exit
+
 ```bash
 exit  # exit from node
 exit  # exit from container
 ```
 
 ### One-liner (Quick Access)
+
 ```bash
 docker exec -it vibe-server su - node -c "claude --dangerously-skip-permissions"
 ```
 
 > 💡 **Note:** Login is not required for normal restarts (`docker-compose restart`). Only needed after `docker-compose down -v` or when container is newly created.
 
-## 🦞 Moltbot Initial Setup
+## 🦞 OpenClaw Initial Setup
 
-> Moltbot is a personal AI assistant that connects to WhatsApp, Telegram, Discord, Slack, and more.
+> OpenClaw is a personal AI assistant that connects to WhatsApp, Telegram, Discord, Slack, and more.
 
 ### Step 1: Ensure Gateway Token is Set
-Check `.env` file has `CLAWDBOT_GATEWAY_TOKEN` set.
+
+Check `.env` file has `OPENCLAW_GATEWAY_TOKEN` set.
 
 ### Step 2: Run Onboarding
+
 ```bash
-docker exec -it moltbot-gateway openclaw onboard
+docker exec -it openclaw-gateway openclaw onboard
 ```
 
 ### Step 3: Configure Channels
+
 Follow the interactive wizard to connect your messaging channels.
 
 ### Quick Commands
+
 ```bash
-# View moltbot logs
-docker logs -f moltbot-gateway
+# View OpenClaw logs
+docker logs -f openclaw-gateway
 
 # Check channel status
-docker exec -it moltbot-gateway openclaw channels status
+docker exec -it openclaw-gateway openclaw channels status
 
-# Restart moltbot
-docker-compose restart moltbot
+# Restart OpenClaw
+docker-compose restart openclaw
 ```
 
 ## 🛑 Stopping
@@ -176,8 +187,8 @@ docker exec -it nginx-proxy sh
 # Enter adguard container
 docker exec -it adguard-home sh
 
-# Enter moltbot container
-docker exec -it moltbot-gateway sh
+# Enter openclaw container
+docker exec -it openclaw-gateway sh
 
 # Enter as root
 docker exec -it -u root vibe-server bash
@@ -227,14 +238,14 @@ docker-compose pull && docker-compose up -d
 
 ## 🌐 Access URLs
 
-| Service | URL | Password |
-|---------|-----|----------|
-| Vibe-Kanban | http://localhost:4000 | - |
-| VS Code (code-server) | http://localhost:8443 | from `.env` file |
-| Moltbot Gateway | http://localhost:18789 | - |
-| Moltbot Control | http://localhost:18790 | - |
-| Nginx Proxy Manager | http://localhost:81 | Default: `admin@example.com` / `changeme` |
-| AdGuard Home (Setup) | http://localhost:8086 | - |
+| Service               | URL                    | Password                                  |
+| --------------------- | ---------------------- | ----------------------------------------- |
+| Vibe-Kanban           | http://localhost:4000  | -                                         |
+| VS Code (code-server) | http://localhost:8443  | from `.env` file                          |
+| OpenClaw Gateway      | http://localhost:18789 | -                                         |
+| OpenClaw Control      | http://localhost:18790 | -                                         |
+| Nginx Proxy Manager   | http://localhost:81    | Default: `admin@example.com` / `changeme` |
+| AdGuard Home (Setup)  | http://localhost:8086  | -                                         |
 
 ## 🆘 Troubleshooting
 
@@ -262,23 +273,27 @@ docker network inspect vibe-stack_default
 ## 🔄 Daily Usage Scenarios
 
 ### Starting Work in the Morning
+
 ```bash
 cd ~/vibe-stack
 docker-compose up -d
 ```
 
 ### Ending Work in the Evening
+
 ```bash
 docker-compose stop
 ```
 
 ### When Something Breaks (caution: resets containers)
+
 ```bash
 docker-compose down
 docker-compose up -d
 ```
 
 ### Complete Reset
+
 ```bash
 docker-compose down -v  # All volumes deleted, all data lost!
 docker-compose up -d
@@ -291,6 +306,7 @@ docker-compose up -d
 If you need to enter a running container to check files or run commands manually (like `ssh`), use the following commands:
 
 **Generic Command:**
+
 ```bash
 docker exec -it <container_name> sh
 # or if sh is not available:
@@ -300,16 +316,19 @@ docker exec -it <container_name> bash
 **Specific Shortcuts:**
 
 1.  **Vibe Server (Kanban):**
+
     ```bash
     docker exec -it vibe-server sh
     ```
 
-2.  **Moltbot (AI Agent):**
+2.  **OpenClaw (AI Agent):**
+
     ```bash
-    docker exec -it moltbot-gateway bash
+    docker exec -it openclaw-gateway bash
     ```
 
 3.  **Code Server (VS Code):**
+
     ```bash
     docker exec -it code-server bash
     ```
@@ -322,4 +341,4 @@ docker exec -it <container_name> bash
 > **Tip:** To run a command as `root` (e.g. to install packages), add `-u root`:
 > `docker exec -it -u root vibe-server sh`
 
-*Last Updated: 2026-01-30*
+_Last Updated: 2026-01-30_

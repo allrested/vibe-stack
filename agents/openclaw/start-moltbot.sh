@@ -2,10 +2,10 @@
 set -e
 
 # Fix permissions
-echo "--- Fixing permissions for Moltbot ---"
+echo "--- Fixing permissions for OpenClaw ---"
 mkdir -p /home/node/.openclaw/credentials
-mkdir -p /home/node/clawd
-chown -R node:node /home/node/.openclaw /home/node/clawd
+mkdir -p /home/node/openclaw
+chown -R node:node /home/node/.openclaw /home/node/openclaw
 chmod 700 /home/node/.openclaw
 
 # Export env vars for node user sessions
@@ -17,8 +17,8 @@ if [ -n "$OPENCLAW_MODEL" ]; then
 fi
 chmod +r /etc/profile.d/openclaw-env.sh 2>/dev/null || true
 
-echo "--- Moltbot container ready ---"
-echo "To install OpenClaw, run: docker exec -it moltbot-gateway su - node"
+echo "--- OpenClaw container ready ---"
+echo "To install OpenClaw, run: docker exec -it openclaw-gateway su - node"
 
 # Keep container running (don't auto-start gateway)
 exec tail -f /dev/null

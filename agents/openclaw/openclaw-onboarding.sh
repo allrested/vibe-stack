@@ -11,7 +11,7 @@ INSTALLED_FLAG="/home/node/.openclaw/.installed"
 # Already installed - show quick help
 if [ -f "$INSTALLED_FLAG" ]; then
     echo ""
-    echo "Welcome back to OpenClaw (Moltbot)!"
+    echo "Welcome back to OpenClaw (OpenClaw)!"
     echo "  openclaw gateway --bind lan    Start gateway"
     echo "  openclaw doctor                Check config"
     echo ""
@@ -21,7 +21,7 @@ fi
 # First-time - show install instructions
 clear
 echo "======================================"
-echo "  OpenClaw (Moltbot) Setup           "
+echo "  OpenClaw (OpenClaw) Setup           "
 echo "======================================"
 echo ""
 echo "OpenClaw is not installed yet."
