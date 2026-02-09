@@ -42,10 +42,10 @@ services:
     container_name: adguard-home
     restart: unless-stopped
     ports:
-      - '53:53/tcp'
-      - '53:53/udp'
-      - '8085:80/tcp' # Web UI port (was 3001, changed due to conflict)
-      - '8086:3000/tcp' # Setup port (was 3000, changed due to conflict)
+      - '5353:53/tcp'   # DNS port (changed from 53 to avoid macOS conflict)
+      - '5353:53/udp'
+      - '8085:80/tcp'   # Web UI port
+      - '8086:3000/tcp' # Setup port
     volumes:
       - ./data/adguard/work:/opt/adguardhome/work
       - ./data/adguard/conf:/opt/adguardhome/conf

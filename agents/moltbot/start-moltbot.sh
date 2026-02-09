@@ -1,20 +1,24 @@
 #!/bin/bash
 set -e
 
-# Fix permissions as per OpenClaw doctor
+# Fix permissions
 echo "--- Fixing permissions for Moltbot ---"
 mkdir -p /home/node/.openclaw/credentials
 mkdir -p /home/node/clawd
 chown -R node:node /home/node/.openclaw /home/node/clawd
 chmod 700 /home/node/.openclaw
 
-# Start OpenClaw as node user
-echo "--- Starting OpenClaw ---"
-# Utilizing su to Switch User since we are root
-# Pass the token from environment variable if set
-TOKEN_ARG=""
+# Export env vars for node user sessions
 if [ -n "$OPENCLAW_GATEWAY_TOKEN" ]; then
-  TOKEN_ARG="--token $OPENCLAW_GATEWAY_TOKEN"
+    echo "export OPENCLAW_GATEWAY_TOKEN=$OPENCLAW_GATEWAY_TOKEN" >> /etc/profile.d/openclaw-env.sh
 fi
+if [ -n "$OPENCLAW_MODEL" ]; then
+    echo "export OPENCLAW_MODEL=$OPENCLAW_MODEL" >> /etc/profile.d/openclaw-env.sh
+fi
+chmod +r /etc/profile.d/openclaw-env.sh 2>/dev/null || true
 
-exec su - node -c "openclaw gateway --bind lan --allow-unconfigured $TOKEN_ARG"
+echo "--- Moltbot container ready ---"
+echo "To install OpenClaw, run: docker exec -it moltbot-gateway su - node"
+
+# Keep container running (don't auto-start gateway)
+exec tail -f /dev/null
