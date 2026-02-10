@@ -83,7 +83,6 @@ services:
       - "18790:18790"
     environment:
       - OPENCLAW_GATEWAY_TOKEN=${OPENCLAW_GATEWAY_TOKEN}
-      - OPENCLAW_MODEL=${OPENCLAW_MODEL}
     volumes:
       - ./agents/openclaw/config:/home/node/.openclaw # Config storage (was .openclaw)
       - ./agents/openclaw/workspace:/home/node/openclaw # Workspace storage
