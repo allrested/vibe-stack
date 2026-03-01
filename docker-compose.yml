@@ -1,93 +1,66 @@
+networks:
+  dokploy-network:
+    external: true
 services:
   vibe-kanban:
-    profiles: ["vibe"]
     build: .
     container_name: vibe-server
     working_dir: /app
     ports:
-      - "4000:4000"
-      - "3000-3100:3000-3100"
+      - "${VIBE_PORT:-4000}:4000"
     environment:
       - PORT=4000
       - HOST=0.0.0.0
     volumes:
       - vibe_config:/home/node/.vibe-kanban # Root yerine node kullanıcısı dizini
       - vibe_data:/home/node/.local/share/vibe-kanban # Proje veritabanı (db.sqlite)
-      - ./repos:/repos
+      - ${BASE_DIR:-.}/repos:/repos
       - ~/.ssh:/root/.ssh:ro
-      - ./secrets:/root/secrets:ro
-      - ./agents/claude:/home/node/.claude
+      - ${BASE_DIR:-.}/secrets:/root/secrets:ro
+      - ${BASE_DIR:-.}/agents/claude:/home/node/.claude
       - ./dev-server.sh:/usr/local/bin/dev-server.sh:ro
     restart: unless-stopped
-
-  # ====================================
-  # NETWORK STACK (Nginx + DNS)
-  # ====================================
-  npm:
-    profiles: ["nginx"]
-    image: "jc21/nginx-proxy-manager:latest"
-    container_name: nginx-proxy
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "81:81"
-      - "443:443"
-    volumes:
-      - ./data/npm/data:/data
-      - ./data/npm/letsencrypt:/etc/letsencrypt
-
-  adguard:
-    profiles: ["dns"]
-    image: adguard/adguardhome
-    container_name: adguard-home
-    restart: unless-stopped
-    ports:
-      - "5354:53/tcp" # DNS port (changed from 53 to avoid macOS conflict)
-      - "5354:53/udp"
-      - "8085:80/tcp" # Web UI port
-      - "8086:3000/tcp" # Setup port
-    volumes:
-      - ./data/adguard/work:/opt/adguardhome/work
-      - ./data/adguard/conf:/opt/adguardhome/conf
+    networks:
+      - dokploy-network
 
   # ====================================
   # CODE-SERVER (Browser-based VS Code)
   # ====================================
   code-server:
-    profiles: ["code"]
     image: codercom/code-server:latest
     container_name: code-server
     ports:
-      - "8443:8080"
+      - "${CODE_PORT:-8443}:8080"
     environment:
       - PASSWORD=${CODE_SERVER_PASSWORD:-dev123}
       - DOCKER_USER=root
     volumes:
-      - ./repos:/home/coder/repos # Same workspace as vibe-kanban (bind mount)
+      - ${BASE_DIR:-.}/repos:/home/coder/repos # Same workspace as vibe-kanban (bind mount)
       - code_server_data:/home/coder # User data persist
       - ~/.ssh:/home/coder/.ssh:ro # Git SSH access
     restart: unless-stopped
-
+    networks:
+      - dokploy-network
   # ====================================
   # OPENCLAW (Personal AI Assistant)
   # ====================================
   openclaw:
-    profiles: ["openclaw"]
     build:
       context: ./agents/openclaw
     container_name: openclaw-gateway
     # platform: linux/amd64  # Node 22 supports ARM64 natively
     restart: unless-stopped
     ports:
-      - "18789:18789"
-      - "18790:18790"
+      - "${OPENCLAW_GATEWAY_PORT:-18789}:18789"
+      - "${OPENCLAW_DASHBOARD_PORT:-18790}:18790"
     environment:
       - OPENCLAW_GATEWAY_TOKEN=${OPENCLAW_GATEWAY_TOKEN}
     volumes:
-      - ./agents/openclaw/config:/home/node/.openclaw # Config storage (was .openclaw)
-      - ./agents/openclaw/workspace:/home/node/openclaw # Workspace storage
-      - ./repos:/repos # Shared repos access
-
+      - ${BASE_DIR:-.}/agents/openclaw/config:/home/node/.openclaw # Config storage (was .openclaw)
+      - ${BASE_DIR:-.}/agents/openclaw/workspace:/home/node/openclaw # Workspace storage
+      - ${BASE_DIR:-.}/repos:/repos # Shared repos access
+    networks:
+      - dokploy-network
 volumes:
   vibe_config:
   vibe_data:
